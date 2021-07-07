@@ -1,0 +1,43 @@
+###para borrar los comandos u objetos que puedan existir almacenado en la memoria
+rm(list=ls())
+
+###elegir directorio de trabajo
+###instalar libreria si se requiere
+#install.packages("ggplot2") 
+library(readxl)
+library(ggplot2)
+
+agus <- read_excel("C:/oposicion_eco/tp9.xlsx")
+
+### Exploramos característica/estructura del data.frame (nuestros datos)
+#head(data)
+#View(agus)
+#summary(agus)
+
+#ploteamos los histogramas
+
+visitantes <-ggplot(agus, aes(x=`Kb`)) + 
+  #geom_vline(aes(xintercept=mean(agus$`Kp`)), color="blue", linetype="dashed", size=1)+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.title=element_text(size=13.5),
+        axis.text=element_text(size=13.5))+
+  geom_histogram(binwidth=1.0,colour = "black", fill = "dodgerblue", alpha= 0.2)+
+  labs(title="Distribución de frecuencias de K (visitantes)",x="k", y = "Frecuencia")+
+  scale_x_continuous(breaks=seq(0,11, by = 1))+
+  scale_y_continuous(breaks=seq(0,2, by = 1))
+
+plot(visitantes)
+
+plantas <-ggplot(agus, aes(x=`Kp`)) + 
+  #geom_vline(aes(xintercept=mean(agus$`Kp`)), color="blue", linetype="dashed", size=1)+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.title=element_text(size=13.5),
+        axis.text=element_text(size=13.5))+
+  geom_histogram(binwidth=1.0, colour = "red", fill = "green", alpha= 0.2)+
+  labs(title="Distribución de frecuencias de K (plantas)",x="k", y = "Frecuencia")+
+  scale_x_continuous(breaks=seq(1,6, by = 1))+
+  scale_y_continuous(breaks=seq(0,7, by = 1))
+
+plot(plantas)
