@@ -4,40 +4,67 @@ rm(list=ls())
 ###elegir directorio de trabajo
 ###instalar libreria si se requiere
 #install.packages("ggplot2") 
-library(readxl)
-library(ggplot2)
 
-agus <- read_excel("C:/oposicion_eco/tp9.xlsx")
+## Paquetes
+library(ggplot2)
+library(gridExtra)
+
+## Importar CSV
+# modificarlo según la ruta de la pc donde estén trabajando
+datos <- read.csv("C:/Users/agust/Downloads/interacciones_red.csv", stringsAsFactors = FALSE)
 
 ### Exploramos característica/estructura del data.frame (nuestros datos)
-#head(data)
-#View(agus)
-#summary(agus)
+#head(datos)
+#View(datos)
 
-#ploteamos los histogramas
+# K_plantas = grado de cada planta (número de visitantes que la visitan)
+# (todas las columnas menos la primera, que es el nombre de la planta)
+datos$K_plantas <- rowSums(datos[ , -1])
 
-visitantes <-ggplot(agus, aes(x=`Kb`)) + 
-  #geom_vline(aes(xintercept=mean(agus$`Kp`)), color="blue", linetype="dashed", size=1)+
-  theme_classic()+
-  theme(plot.title = element_text(hjust = 0.5),
-        axis.title=element_text(size=13.5),
-        axis.text=element_text(size=13.5))+
-  geom_histogram(binwidth=1.0,colour = "black", fill = "dodgerblue", alpha= 0.2)+
-  labs(title="Distribución de frecuencias de K (visitantes)",x="k", y = "Frecuencia")+
-  scale_x_continuous(breaks=seq(0,11, by = 1))+
-  scale_y_continuous(breaks=seq(0,2, by = 1))
+# K_visitnates = grado de cada visitante (número de plantas visitadas)
+# lo dejamos como vector aparte, porque sería un error mostrarlo en la tabla (no coinciden filas y columnas)
+K_visit <- colSums(datos[ , 2:9])
 
-plot(visitantes)
+df_vis <- data.frame(K_visit = K_visit)
 
-plantas <-ggplot(agus, aes(x=`Kp`)) + 
-  #geom_vline(aes(xintercept=mean(agus$`Kp`)), color="blue", linetype="dashed", size=1)+
-  theme_classic()+
-  theme(plot.title = element_text(hjust = 0.5),
-        axis.title=element_text(size=13.5),
-        axis.text=element_text(size=13.5))+
-  geom_histogram(binwidth=1.0, colour = "red", fill = "green", alpha= 0.2)+
-  labs(title="Distribución de frecuencias de K (plantas)",x="k", y = "Frecuencia")+
-  scale_x_continuous(breaks=seq(1,6, by = 1))+
-  scale_y_continuous(breaks=seq(0,7, by = 1))
+# Histogramas bonitos
 
-plot(plantas)
+visitantes <- ggplot(df_vis, aes(x = K_visit)) +
+  geom_histogram(
+    binwidth = 1,
+    colour   = "black",
+    fill     = "dodgerblue",
+    alpha    = 0.3
+  ) +
+  theme_classic() +
+  labs(
+    title = "Distribución de frecuencias de k (visitantes)",
+    x     = "k",
+    y     = "Frecuencia"
+  ) +
+  scale_x_continuous(breaks = seq(0, 13, by = 1)) +
+  scale_y_continuous(breaks = seq(0, 8,  by = 1))
+
+# plot(visitantes)
+
+plantas <- ggplot(datos, aes(x = K_plantas)) +
+  geom_histogram(
+    binwidth = 1,
+    colour   = "red",
+    fill     = "palegreen",
+    alpha    = 0.3
+  ) +
+  theme_classic() +
+  labs(
+    title = "Distribución de frecuencias de k (plantas)",
+    x     = "k",
+    y     = "Frecuencia"
+  ) +
+  scale_x_continuous(breaks = seq(0, 7, by = 1)) +
+  scale_y_continuous(breaks = seq(0, 7, by = 1))
+
+# plot(plantas)
+
+
+# ambos plots en uno solo
+grid.arrange(plantas, visitantes, ncol = 2)
